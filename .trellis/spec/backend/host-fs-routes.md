@@ -103,9 +103,59 @@ try {
 
 ---
 
+## Scenario: /drawer/fs/search（文件名递归搜索）
+
+### 1. Scope / Trigger
+
+- 搜索栏需要全工作区按文件名匹配，浏览器半无递归列目录能力，必须宿主代理。
+- 不排除 node_modules/隐藏目录（PRD D2）；性能由命中上限保护。
+
+### 2. Signature
+
+```
+GET /drawer/fs/search?root=<absolute-dir>&q=<1-100 chars>
+```
+
+### 3. Contract
+
+响应 200：
+
+```json
+{ "ok": true, "root": "<dir>", "q": "<query>", "truncated": false,
+  "entries": [{ "name": "client.js", "path": "<abs>", "dir": false }] }
+```
+
+- 广度优先遍历（队列），结果先浅后深；`name.toLowerCase().includes(q.toLowerCase())` 命中。
+- 命中 `MAX_SEARCH`（200）立即停止并 `truncated:true`。
+- 符号链接目录跳过（防环）；单个目录 `readdir` 失败跳过该子树继续。
+
+### 4. Validation & Error Matrix
+
+| 条件 | 状态 | 响应 |
+|------|------|------|
+| `root` 非绝对路径 | 400 | `{ok:false, error:"root 必须是绝对路径"}` |
+| `root` 不存在/非目录 | 404 | `{ok:false, error:"目录不存在：<root>"}` |
+| `q` 为空或 >100 字符（trim 后） | 400 | `{ok:false, error:"q 长度须为 1-100 字符"}` |
+| 跨站请求 | 403 | guard 统一 `{ok:false, error:"forbidden"}` |
+
+### 5. Good/Base/Bad Cases
+
+- Good：深目录命中（含 node_modules 内文件），`truncated:false`。
+- Base：无命中 → `entries: []`；海量命中 → 恰 200 条 + `truncated:true`。
+- Bad：符号链接环 → 因链接目录不入队，不会死循环。
+
+### 6. Tests Required
+
+- mock 行为级验证：正常命中（大小写不敏感）、空结果、q 空/超长 400、root 相对 400、
+  大目录（node_modules 搜常见子串）200 条 + truncated、跨站 403。
+
+---
+
 ## 约定：新增宿主路由的通用模式
 
 - 所有路由：`route(path, guard(async (req, res) => {...}))`，先判 method（405），再解析
   `new URL(req.url ?? "/", "http://localhost")`，校验参数后 `respond(res, status, payload)`。
 - 参数校验顺序：绝对路径 → stat 存在性 → 类型（list 要目录 / read 要文件）。
-- 常量上限集中定义在文件顶部（`MAX_READ`、`MAX_SESSIONS`、`MAX_OUTPUT`）。
+- 常量上限集中定义在文件顶部（`MAX_READ`、`MAX_SESSIONS`、`MAX_OUTPUT`、`MAX_SEARCH`）。
+- vendor 分发约定：新第三方资源进 `loadVendor` 表 + `route("/drawer/vendor/<name>", ...)`
+  注册，文件缺失回 404 并提示 pnpm install（见 highlight.min.js 与 xterm 两例）。
