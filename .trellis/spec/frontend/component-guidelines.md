@@ -22,6 +22,57 @@ Components are plain functions inside the factory closure. Shared state that spa
 trees (e.g. header toggle button ↔ details panel) uses an apply-closure pub/sub
 (`subscribe`/`actions` injected via slot `inject()`), never React context.
 
+### Pattern: apply-level value with change notification (e.g. session cwd)
+
+**Problem**: `ctx.sessions.list.subscribe` updates an apply-closure variable, but that alone does
+not re-render React components. Components that must react to the value (e.g. the explorer tree
+rebuilding when the session cwd changes) need a second pub/sub channel.
+
+**Solution**: keep the source value in apply closure; on change, notify a dedicated listener set;
+inject a `subscribeX` through the slot `inject()` return; the component converts it into local
+state inside a `useEffect`:
+
+```js
+// apply closure
+let currentCwd;
+const cwdListeners = new Set();
+const refreshCwd = () => {
+    // ...read snapshot...
+    if (next !== currentCwd) {
+        currentCwd = next;
+        for (const fn of [...cwdListeners]) fn();
+    }
+};
+const subscribeCwd = (fn) => { cwdListeners.add(fn); return () => { cwdListeners.delete(fn); }; };
+
+// component
+const [cwd, setCwd] = useState(() => getCwd());
+useEffect(() => subscribeCwd(() => setCwd(getCwd())), [subscribeCwd, getCwd]);
+```
+
+## Lazy Tree Conventions (explorer file tree)
+
+### Convention: expand always re-fetches
+
+**What**: expanding a directory node always issues a fresh `list` request (keeping stale data
+visible until the response replaces it), even when cached entries exist.
+
+**Why**: files created outside the UI (e.g. in the terminal tab) must become visible on the next
+expand. Caching entries for display is fine; serving cached entries on re-expand would hide them.
+
+### Convention: shared GET+JSON fetch helper for host routes
+
+**What**: host-route GETs that validate `{ok:false,error}` responses go through a factory-level
+`fetchJson` helper (throws on failure, returns payload); repeated inline fetch blocks are a
+reuse smell. Terminal's `api` (POST with body) stays separate.
+
+### Mistake: rendering stale async root data after the root changed
+
+**Symptom**: switching sessions briefly shows the previous session's tree.
+
+**Fix**: track the current root path in a ref (`rootPathRef`), and drop late responses whose path
+no longer matches (`if (rootPathRef.current === path) setRoot(...)`).
+
 ---
 
 ## Props Conventions
