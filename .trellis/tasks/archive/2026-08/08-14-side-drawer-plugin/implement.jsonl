@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/08-14-side-drawer-plugin/research/dsh-plugin-mechanisms.md", "reason": "DSH 插件机制合同：webServer 原生 (req,res) handler、槽位 priority 阴影、AppFrame 折叠不卸载、layout 无宽度订阅——终端/浏览器改动必须遵守"}
+{"file": ".trellis/tasks/08-14-side-drawer-plugin/research/xterm-browser-loading.md", "reason": "xterm 6.0.0 自包含 ESM 验证结论与接入方式：vendor 路由 + 动态 import + CSS 必须加载 + 手动 fit 约定"}

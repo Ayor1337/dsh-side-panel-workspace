@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/08-14-side-drawer-plugin/research/dsh-plugin-mechanisms.md", "reason": "审查改动是否破坏平台合同：priority 阴影不销毁官方注册、所有注册返回 disposer、同源 guard 不削弱"}
+{"file": ".trellis/tasks/08-14-side-drawer-plugin/research/xterm-browser-loading.md", "reason": "审查 xterm 加载路径是否符合已验证结论（CSS 必须注入、测量依赖 CSS、无 addon-fit）"}

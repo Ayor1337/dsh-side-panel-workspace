@@ -1,0 +1,31 @@
+{
+  "name": "dsh-plugin-side-drawer",
+  "version": "0.1.0",
+  "description": "DSH Web 插件：聊天页右侧抽屉，内含终端与浏览器两个功能",
+  "type": "module",
+  "main": "lib/index.js",
+  "dependencies": {
+    "@xterm/xterm": "^6.0.0"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "drawer",
+    "terminal",
+    "browser"
+  ],
+  "license": "MIT"
+}
