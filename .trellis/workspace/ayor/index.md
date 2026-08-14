@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 1
-- **Last Active**: 2026-08-14
+- **Total Sessions**: 2
+- **Last Active**: 2026-08-15
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~25 | Active |
+| `journal-1.md` | ~48 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 2 | 2026-08-15 | 资源管理器标签页（文件树 + 内容预览） | `9aad48a`, `6622d79`, `529b408` | `main` |
 | 1 | 2026-08-14 | 抽屉插件 v2：xterm 终端 + 浏览器增强 + node-pty 解析修复 | - | `-` |
 <!-- @@@/auto:session-history -->
 
