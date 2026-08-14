@@ -75,6 +75,41 @@ no longer matches (`if (rootPathRef.current === path) setRoot(...)`).
 
 ---
 
+## Syntax Highlighting Conventions
+
+### Convention: vendor UMD via `import()` + `globalThis` fallback, always degrade to plain text
+
+**What**: highlight.js is served as the UMD single file `highlight.min.js` from
+`@highlightjs/cdn-assets` (the npm main package has NO browser-ready artifact — its `es/core.js`
+only re-exports the CJS `lib/core.js`; verified via npm pack). Load with
+`import("/drawer/vendor/highlight.min.js")` and read `globalThis.hljs` (UMD takes the global
+branch under native ESM). Any failure (404 = not installed, unsupported language, hljs throw)
+must degrade to plain-text `<pre>` — file preview is never blocked by the optional dependency.
+
+**Why**: the client stays a self-contained classic script with no build step; an optional
+dependency failure must not break the core preview feature.
+
+**Theme**: a hand-written ~15-line token theme on `--dsw-*` variables (`.sdw_pre .hljs-keyword`
+etc.), so light/dark adapts automatically instead of shipping two official theme CSS files.
+
+### Pattern: extension → language map before calling highlight
+
+Only call `hljs.highlight` when the extension maps to a known common-set language; unmapped
+types render plain text (also avoids highlightAuto cost on huge files).
+
+---
+
+## Drag Resizer Conventions
+
+### Pattern: document-level drag for split resizers
+
+`mousedown` records start position/width → attach `mousemove`/`mouseup` on `document` (not the
+handle) → update width with `clampNum(...)` → `mouseup` removes listeners and restores
+`document.body.style.userSelect`. Keep a cleanup ref so component unmount mid-drag cannot leak
+listeners (ExplorerPane `dragCleanupRef`).
+
+---
+
 ## Props Conventions
 
 Slot-registered components receive props only from the registration's `inject()` return value.
