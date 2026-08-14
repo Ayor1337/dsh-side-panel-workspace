@@ -77,17 +77,22 @@ no longer matches (`if (rootPathRef.current === path) setRoot(...)`).
 
 ## Syntax Highlighting Conventions
 
-### Convention: vendor UMD via `import()` + `globalThis` fallback, always degrade to plain text
+### Convention: vendor min build via classic `<script>` injection, always degrade to plain text
 
-**What**: highlight.js is served as the UMD single file `highlight.min.js` from
-`@highlightjs/cdn-assets` (the npm main package has NO browser-ready artifact — its `es/core.js`
-only re-exports the CJS `lib/core.js`; verified via npm pack). Load with
-`import("/drawer/vendor/highlight.min.js")` and read `globalThis.hljs` (UMD takes the global
-branch under native ESM). Any failure (404 = not installed, unsupported language, hljs throw)
-must degrade to plain-text `<pre>` — file preview is never blocked by the optional dependency.
+**What**: highlight.js is served from `@highlightjs/cdn-assets` as `highlight.min.js` (the npm
+main package has NO browser-ready artifact — its `es/core.js` only re-exports the CJS
+`lib/core.js`; verified via npm pack). **The min build is a top-level `var hljs` with a CJS-only
+export tail — it has no `window`/`globalThis` assignment branch.** Under native ESM `import()`
+the module-scoped `var` never leaks out, so `globalThis.hljs` stays undefined. Load it with a
+classic `<script src="/drawer/vendor/highlight.min.js">` injection (top-level `var` attaches to
+`window`), resolve `window.hljs` on `onload`. Any failure (404 = not installed, unsupported
+language, hljs throw) must degrade to plain-text `<pre>` — file preview is never blocked by the
+optional dependency.
 
 **Why**: the client stays a self-contained classic script with no build step; an optional
-dependency failure must not break the core preview feature.
+dependency failure must not break the core preview feature. (First implementation used
+`import()` + `globalThis.hljs` and silently rendered plain text — the min build has no global
+branch; re-verify the build shape when upgrading the package.)
 
 **Theme**: a hand-written ~15-line token theme on `--dsw-*` variables (`.sdw_pre .hljs-keyword`
 etc.), so light/dark adapts automatically instead of shipping two official theme CSS files.
