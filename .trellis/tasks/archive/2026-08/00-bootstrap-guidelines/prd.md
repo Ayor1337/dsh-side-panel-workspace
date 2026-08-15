@@ -21,9 +21,9 @@ the rest conversationally.
 
 ## Status (update the checkboxes as you complete each item)
 
-- [ ] Fill backend guidelines
-- [ ] Fill frontend guidelines
-- [ ] Add code examples
+- [x] Fill backend guidelines
+- [x] Fill frontend guidelines
+- [x] Add code examples
 
 ---
 
@@ -35,7 +35,7 @@ the rest conversationally.
 | File | What to document |
 |------|------------------|
 | `.trellis/spec/backend/directory-structure.md` | Where different file types go (routes, services, utils) |
-| `.trellis/spec/backend/database-guidelines.md` | ORM, migrations, query patterns, naming conventions |
+| `.trellis/spec/backend/database-guidelines.md` | ~~ORM, migrations, query patterns, naming conventions~~ **已删除**：本项目无数据库（见 `.trellis/spec/backend/directory-structure.md` 与 index.md 说明） |
 | `.trellis/spec/backend/error-handling.md` | How errors are caught, logged, and returned |
 | `.trellis/spec/backend/logging-guidelines.md` | Log levels, format, what to log |
 | `.trellis/spec/backend/quality-guidelines.md` | Code review standards, testing requirements |
