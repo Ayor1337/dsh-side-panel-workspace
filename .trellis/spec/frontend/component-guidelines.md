@@ -184,8 +184,8 @@ const term = new mod.Terminal({ /* ... */ });
 term.open(el);
 ```
 
-**Related**: `.trellis/tasks/08-14-side-drawer-plugin/research/xterm-browser-loading.md`,
-`.trellis/tasks/08-14-side-drawer-plugin/research/dsh-plugin-mechanisms.md`.
+**Related**: `.trellis/tasks/archive/2026-08/08-14-side-drawer-plugin/research/xterm-browser-loading.md`,
+`.trellis/tasks/archive/2026-08/08-14-side-drawer-plugin/research/dsh-plugin-mechanisms.md`.
 
 ---
 

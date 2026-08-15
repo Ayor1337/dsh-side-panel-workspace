@@ -1,51 +1,47 @@
-# Logging Guidelines
+# 日志规范（宿主半）
 
-> How logging is done in this project.
-
----
-
-## Overview
-
-<!--
-Document your project's logging conventions here.
-
-Questions to answer:
-- What logging library do you use?
-- What are the log levels and when to use each?
-- What should be logged?
-- What should NOT be logged (PII, secrets)?
--->
-
-(To be filled by the team)
+> 本项目宿主代码的"日志"约定：**默认零日志**。错误经 HTTP 响应向客户端传达，不写日志文件、
+> 不用日志库。
 
 ---
 
-## Log Levels
+## 现状（记录现实，而非理想）
 
-<!-- When to use each level: debug, info, warn, error -->
+`lib/index.js` 中没有任何 `console.*` 调用。这是有意为之：
 
-(To be filled by the team)
+- 宿主行跑在 dsh 主进程内，日志会混入 harness 输出，污染用户终端；
+- 本插件没有需要运维排障的常驻服务状态（会话是瞬态的、路由是无状态的）；
+- 错误的唯一消费者是浏览器半的 UI，它通过 `{ok:false, error}` 直接展示中文文案。
 
----
+**约定：宿主路由代码不输出任何日志。** 修改 `lib/index.js` 时保持此不变式
+（可用 `grep -n "console\." lib/index.js` 校验）。
 
-## Structured Logging
+## 允许 console 输出的例外
 
-<!-- Log format, required fields -->
+仅限**开发者手动运行**的脚本，且输出用于展示进度/结果（不是排障日志）：
 
-(To be filled by the team)
+| 文件 | 输出内容 |
+|------|----------|
+| `scripts/apply-details-width.mjs` | 补丁进度：找到的钳制点、改动、完成提示 |
+| `verify-host.mjs` / `verify-client.mjs` | 冒烟测试各步断言结果 + 最终 PASSED/失败信息 |
 
----
+新增 dev 脚本可沿用 `console.log`/`console.error` 风格（`console.error` 用于失败分支）。
 
-## What to Log
+## 如果将来确实需要日志
 
-<!-- Important events to log -->
+按以下最小约定执行（当前代码不满足前，不得引入）：
 
-(To be filled by the team)
+- 仅 `console.error`，且只打在**无法经 HTTP 传达**的宿主级异常路径（如插件加载阶段）；
+- 不输出：终端输入/输出内容、文件内容、请求 body、任何密钥/路径里的用户名；
+- 不引入日志库（保持零依赖哲学）。
 
----
+## 什么不该出现在任何输出里
 
-## What NOT to Log
+- pty 的原始字节流（含用户输入的命令、回显的敏感输出）；
+- 被读文件的正文（`/drawer/fs/read` 的 content 只经 HTTP 响应返回给同源客户端）；
+- `process.env` 内容、profile 绝对路径（README 已知限制已足够说明安装布局）。
 
-<!-- Sensitive data, PII, secrets -->
+## 常见错误
 
-(To be filled by the team)
+- **为调试加 `console.log` 后忘记删除**：路由代码合入前必须清零（可用上述 grep 校验）。
+- **用日志代替错误契约**：客户端拿不到日志，必须返回 `{ok:false, error}`。
