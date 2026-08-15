@@ -46,3 +46,24 @@
 ### Status
 
 [OK] **Completed**
+
+
+## Session 3: 浏览器标签多开 + 去除网址记忆
+
+**Date**: 2026-08-15
+**Task**: 浏览器标签多开 + 去除网址记忆（08-15-browser-tab-multi）
+**Branch**: `main`
+
+### Summary
+
+浏览器标签行为调整：删除 localStorage 网址记忆（BROWSER_URL_KEY 读取/写入，每次新建从空白开始页出发）；`addTab` 浏览器不再单例，与终端一样可多开（资源管理器保持单例）；多开后标签名跟随当前网址 host（含端口，未导航显示"浏览器"），子组件经 `onUrlChange` 回调 + 父级函数式 `updateTabUrl`（同 url 短路防无谓重渲染）驱动。改动仅 client.js + README 同步；node --check 与 verify-client.mjs 冒烟测试通过。AC 需浏览器手测（刷新页面即生效，无需重启宿主）。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `(见提交记录)` | feat(client): 浏览器标签多开 + 去除网址记忆 + 标签名跟随域名 |
+
+### Status
+
+[OK] **Completed**
