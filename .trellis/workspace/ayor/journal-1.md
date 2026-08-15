@@ -67,3 +67,26 @@
 ### Status
 
 [OK] **Completed**
+
+
+## Session 3: 浏览器标签多开 + 去除网址记忆 + 空态标签名修正
+
+**Date**: 2026-08-15
+**Task**: 浏览器标签多开 + 去除网址记忆 + 空态标签名修正
+**Branch**: `main`
+
+### Summary
+
+浏览器标签行为调整：删除 localStorage 网址记忆（每次新建从空白开始）；addTab 浏览器不再单例可多开（资源管理器保持单例）；标签名跟随当前域名（host 含端口），未导航显示"新标签"（用户澄清修正，非"浏览器"），子组件经 onUrlChange 回调 + 父级函数式 updateTabUrl 驱动。仅 client.js + README 同步；node --check 与 verify-client.mjs 冒烟通过。另：归档遗留任务 explorer-polish（资源管理器优化，已手测通过）。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4bbd1b6` | (see git log) |
+| `5807223` | (see git log) |
+| `c69078a` | (see git log) |
+
+### Status
+
+[OK] **Completed**
